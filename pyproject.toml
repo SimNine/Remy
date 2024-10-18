@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-nicegui = "^2.*"
+flask = "^3.*"
 peewee = "^3.*"
 
 [tool.poetry.dev-dependencies]
