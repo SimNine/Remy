@@ -1,9 +1,16 @@
+from typing import Collection
 from flask import Flask, request, redirect
 
-from recipe import Ingredient, RecipeToIngredient, db, Recipe
+from recipe import (
+    Ingredient,
+    RecipeToIngredient,
+    Recipe,
+    RecipeToStep,
+    db,
+)
 
 db.connect()
-db.create_tables([Recipe, Ingredient, RecipeToIngredient])
+db.create_tables([Recipe, Ingredient, RecipeToIngredient, RecipeToStep])
 
 app = Flask(__name__)
 
@@ -34,13 +41,15 @@ def route_view_recipe(name: str):
     recipe: Recipe = Recipe.get(Recipe.name == name)
 
     def render_ingredient_list(recipe: Recipe, indentation: str = ""):
+        ingredients: Collection[Ingredient] = Ingredient.select().join(RecipeToIngredient).join(Recipe).where(Recipe.id == recipe.id)
+
         return (
-            f"<div>" +
+            f"<ul>" +
             "".join([
-                f"<div>{indentation}{ingredient.name}</div>"
-                for ingredient in recipe.ingredients
+                f"<li>{indentation}{ingredient.name}</li>"
+                for ingredient in ingredients
             ]) +
-            f"</div>"
+            f"</ul>"
         )
 
     return (
@@ -50,6 +59,8 @@ def route_view_recipe(name: str):
         f"<p>{recipe.description}</p>" +
         f"<h3>Ingredients:</h3>" +
         render_ingredient_list(recipe) +
+        f"<h3>Steps:</h3>" +
+        f"<p>Not impl yet</p>" +
         f"</div>"
     )
 
